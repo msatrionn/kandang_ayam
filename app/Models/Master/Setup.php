@@ -22,8 +22,8 @@ class Setup extends Model
     public function getPengeluaranAttribute()
     {
         $data   =   LogTrans::where('status', 1)
-                    ->whereIn('produk_id', Produk::select('id')->where('tipe', $this->id)->where('jenis', 'purchase'))
-                    ->sum('nominal');
+            ->whereIn('produk_id', Produk::select('id')->where('tipe', $this->id)->where('jenis', 'purchase'))
+            ->sum('nominal');
 
         return $data;
     }
@@ -31,17 +31,17 @@ class Setup extends Model
     public static function pengeluaran($jenis)
     {
         $data   =   LogTrans::where('status', 1)
-                    ->where(function($query) use ($jenis){
-                        if ($jenis == 'pembelian_tetap') {
-                            $query->where('jenis', 'pembelian_lain')->whereIn('produk_id', Produk::select('id')->where('tipe', 1));
-                        } else
+            ->where(function ($query) use ($jenis) {
+                if ($jenis == 'pembelian_tetap') {
+                    $query->where('jenis', 'pembelian_lain')->whereIn('produk_id', Produk::select('id')->where('tipe', 1));
+                } else
                         if ($jenis == 'pembelian_lain') {
-                            $query->where('jenis', 'pembelian_lain')->whereNotIn('produk_id', Produk::select('id')->where('tipe', 1));
-                        } else {
-                            $query->where('jenis', $jenis);
-                        }
-                    })
-                    ->sum('nominal');
+                    $query->where('jenis', 'pembelian_lain')->whereNotIn('produk_id', Produk::select('id')->where('tipe', 1));
+                } else {
+                    $query->where('jenis', $jenis);
+                }
+            })
+            ->sum('nominal');
 
         return $data;
     }
@@ -54,33 +54,33 @@ class Setup extends Model
     public static function info_kas($tipe)
     {
         $data   =   Setup::where('slug', 'payment')
-                    ->where('status', $tipe)
-                    ->get();
+            ->where('status', $tipe)
+            ->get();
 
         $row    =   '';
         foreach ($data as $item) {
             $masuk      =   HeaderTrans::whereIn('jenis', ['penjualan_lain', 'penjualan_ayam', 'setor_modal', 'mutasi_masuk'])
-                            ->where('status', 1)
-                            ->where('payment_method', $item->id)
-                            ->whereYear('tanggal', date('Y'))
-                            ->sum('total_trans');
+                ->where('status', 1)
+                ->where('payment_method', $item->id)
+                ->whereYear('tanggal', date('Y'))
+                ->sum('total_trans');
 
             $keluar     =   HeaderTrans::whereIn('jenis', ['beban', 'pengeluaran', 'pengeluaran_lain', 'tarik_modal', 'beli_aset', 'mutasi_keluar'])
-                            ->where('status', 1)
-                            ->where('payment_method', $item->id)
-                            ->whereYear('tanggal', date('Y'))
-                            ->sum('total_trans');
+                ->where('status', 1)
+                ->where('payment_method', $item->id)
+                ->whereYear('tanggal', date('Y'))
+                ->sum('total_trans');
 
             $pengurang  =   LogTrans::whereIn('jenis', ['dp', 'pelunasan', 'beban_angkut', 'biaya_kirim', 'biaya_lain_lain', 'gaji', 'pembelian_lain', 'cashbon'])
-                            ->where('status', 1)
-                            ->where('kas', $item->id)
-                            ->whereYear('tanggal', date('Y'))
-                            ->sum('nominal');
+                ->where('status', 1)
+                ->where('kas', $item->id)
+                ->whereYear('tanggal', date('Y'))
+                ->sum('nominal');
 
             $row    .=  "<div class='border-bottom p-1'>";
             $row    .=  "<div class='row'>";
             $row    .=  "<div class='col pr-1'>";
-            $row    .=  $item->nama ;
+            $row    .=  $item->nama;
             $row    .=  "</div>";
             $row    .=  "<div class='col-auto pl-1'>";
             $row    .=  number_format($masuk - ($keluar + $pengurang));
@@ -89,27 +89,27 @@ class Setup extends Model
             $row    .=  "</div>";
         }
 
-        return $row ;
+        return $row;
     }
 
     public static function hitung_kas($id)
     {
         $masuk      =   HeaderTrans::whereIn('jenis', ['penjualan_lain', 'penjualan_ayam', 'setor_modal', 'mutasi_masuk'])
-                        ->where('payment_method', $id)
-                        ->where('status', 1)
-                        ->sum('total_trans');
+            ->where('payment_method', $id)
+            ->where('status', 1)
+            ->sum('total_trans');
 
         $keluar     =   HeaderTrans::whereIn('jenis', ['beban', 'pengeluaran', 'pengeluaran_lain', 'tarik_modal', 'beli_aset', 'mutasi_keluar'])
-                        ->where('payment_method', $id)
-                        ->where('status', 1)
-                        ->sum('total_trans');
+            ->where('payment_method', $id)
+            ->where('status', 1)
+            ->sum('total_trans');
 
         $pengurang  =   LogTrans::whereIn('jenis', ['dp', 'pelunasan', 'beban_angkut', 'biaya_kirim', 'biaya_lain_lain', 'pembelian_lain', 'cashbon'])
-                        ->where('status', 1)
-                        ->where('kas', $id)
-                        ->sum('nominal');
+            ->where('status', 1)
+            ->where('kas', $id)
+            ->sum('nominal');
 
-        return $masuk - ($keluar + $pengurang) ;
+        return $masuk - ($keluar + $pengurang);
     }
 
     public function listpay()

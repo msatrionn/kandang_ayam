@@ -204,7 +204,9 @@
                         data-jumlahovk="{{ Kartu::where('hari',$i)->where('tipekartu','ovk')->first()->masuk ?? 0 }}"
                         data-jumlahovk_keluar="{{ Kartu::where('hari',$i)->where('tipekartu','ovk')->first()->keluar ?? 0 }}"
                         data-hari_ovk={{ $i }}
-                        data-jenis_ovkid="{{ substr(Kartu::view_ovkid($kandang->id, $i), 0, -2) }}">
+                        data-jenis_ovkid="{{ substr(Kartu::view_ovkid($kandang->id, $i), 0, -2) }}"
+                        data-tanggal_hidden_ovk="{{
+                        Tanggal::date(Carbon\Carbon::parse($kandang->tanggal)->addDays(($i - 1))) }}">
 
                     @if (Kartu::where('hari',$i)->where('tipekartu','ovk')->first()->edited == 'sudah diedit')
                     <i class="fa fa-check"></i>
@@ -631,9 +633,9 @@
     });
     $("[name=ovk]").on("click",function(){
     var tgl=$(this).attr("data-tanggal_hidden_ovk")
-    console.log('====================================');
-    console.log(tgl);
-    console.log('====================================');
+    // console.log('====================================');
+    // console.log(tgl);
+    // console.log('====================================');
     $("[name=tanggal_kandang_ovk]").val(tgl)
     var ovk= $(this).attr('data-jumlahovk');
     var ovk_keluar= $(this).attr('data-jumlahovk_keluar');
@@ -647,8 +649,8 @@
 
     $("[name=jenis_ovk_select]").val(jenis_ovk);
     $("[name=select2ovk]").val(jenis_ovkid);
-    console.log(jenis_ovk);
-    console.log(jenis_ovkid);
+    // console.log(jenis_ovk);
+    // console.log(jenis_ovkid);
     var $newOption = $(`<option value='${jenis_ovkid}' selected>${jenis_ovk} </option>@foreach ($ovk as $row)<option value='{{ $row->produk_id }}'>{{ $row->produk->nama }}({{ $row->stock_sisa}})</option>@endforeach`)
 
     $(".select2ovk").html($newOption).trigger('change');
@@ -700,7 +702,6 @@
         $('#table-record').load(`{{ url('/jurnal-angkatan/table/${kandang}') }}`)
         $('#notif').html("<div class='alert alert-success' role='alert'> Berhasil diubah</div>")
         $("#exampleModalOvk .close").click()
-        console.log(data);
         }
         })
 

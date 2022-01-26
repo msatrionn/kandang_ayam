@@ -27,7 +27,8 @@
             <div class="card-body">
                 <div class="border-bottom p-1">
                     <div class="row">
-                        <div class="col pr-1">Penjualan Ayam<br>({{ number_format($list_trans['penjualan_ayam']['terjual']) }} Ekor)</div>
+                        <div class="col pr-1">Penjualan Ayam<br>({{
+                            number_format($list_trans['penjualan_ayam']['terjual']) }} Ekor)</div>
                         <div class="col-auto pl-1"> {{ number_format($list_trans['penjualan_ayam']['nominal']) }}</div>
                     </div>
                 </div>
@@ -54,7 +55,8 @@
                     <div class="border-bottom p-1 cursor">
                         <div class="row">
                             <div class="col pr-1">{{ $row->nomor_purchasing }}</div>
-                            <div class="col-auto pl-1"> {{ number_format(($row->total_harga + ($row->tax ? 0 : ($row->total_harga * (10/100)))) - $row->dibayarkan) }}</div>
+                            <div class="col-auto pl-1"> {{ number_format(($row->total_harga + ($row->tax ? 0 :
+                                ($row->total_harga * (10/100)))) - $row->dibayarkan) }}</div>
                         </div>
                     </div>
                 </a>
@@ -178,18 +180,18 @@
             <div class="card-header">Stock Produk Limit</div>
             <div class="card-body">
                 @foreach ($produk as $row)
-                    @if ($row->stocklimit >= $row->jumlah_stock)
-                    <div class="border-bottom p-1">
-                        <div class="row">
-                            <div class="col pr-1">
-                                {{ $row->nama }}
-                            </div>
-                            <div class="col-auto pl-1">
-                                {{ number_format($row->jumlah_stock) }} {{ $row->tipesatuan->nama }}
-                            </div>
+                @if ($row->stocklimit >= $row->jumlah_stock)
+                <div class="border-bottom p-1">
+                    <div class="row">
+                        <div class="col pr-1">
+                            {{ $row->nama }}
+                        </div>
+                        <div class="col-auto pl-1">
+                            {{ number_format($row->jumlah_stock) }} {{ $row->tipesatuan->nama }}
                         </div>
                     </div>
-                    @endif
+                </div>
+                @endif
                 @endforeach
             </div>
         </div>

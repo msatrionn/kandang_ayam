@@ -109,6 +109,7 @@ Route::get('/jurnal-angkatan', 'Jurnal\Angkatan@index')->name('angkatanayam.inde
 Route::post('/jurnal-angkatan', 'Jurnal\Angkatan@store')->name('angkatanayam.store');
 Route::patch('/jurnal-angkatan', 'Jurnal\Angkatan@destroy')->name('angkatanayam.destroy');
 Route::post('/import-record', 'Jurnal\Angkatan@excel')->name('import.record');
+Route::post('/import-timbang', 'Jurnal\Angkatan@excel_timbang')->name('import.timbang');
 Route::post('/edit-record', 'Jurnal\Angkatan@edit_record')->name('edit.record');
 Route::post('/record_table', 'Jurnal\Angkatan@edit_record')->name('edit.record');
 Route::get('/jurnal-angkatan/table/{id}', 'Jurnal\Angkatan@table')->name('table.record');

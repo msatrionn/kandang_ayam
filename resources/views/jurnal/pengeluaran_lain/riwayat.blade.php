@@ -11,9 +11,11 @@ dd($send)
         var ket=$(this).attr("data-keterangan");
         var kandang=$(this).attr("data-kandang");
         var pay=$(this).attr("data-payment");
+        var id=$(this).attr("data-id");
         $("[name=tanggal]").val(tgl)
         $("[name=nominal_pengeluaran]").val(pay)
         $("[name=keterangan]").val(ket)
+        $("[name=x_code]").val(id)
 
     })
 </script>
@@ -40,7 +42,8 @@ dd($send)
                         <button class="btn btn-warning btn-sm text-right submit_data" data-toggle="modal"
                             data-target="#backdrop{{ $row->id }}" data-tanggal="{{ $row->tanggal }}"
                             data-keterangan="{{ $row->keterangan }}" data-kandang="{{ $row->kandang_id ?
-                            '(' . $row->kandang->nama . ')' : ''}}" data-payment="{{ $row->payment }}">
+                            '(' . $row->kandang->nama . ')' : ''}}" data-payment="{{ $row->payment }}"
+                            data-id="{{ $row->id }}">
                             Aksi</button>
                     </div>
                 </div>
@@ -134,7 +137,7 @@ dd($send)
                     </form>
                     <form action="{{ route('keluarlain.destroy') }}" method="post">
                         @csrf @method('delete') <input type="hidden" name="x_code" value="{{ $row->id }}">
-                        <button type="submit" class="btn btn-danger">Hapus</button>
+                        <button type="submit" class="btn btn-danger">Hapus </button>
                     </form>
                 </div>
             </div>

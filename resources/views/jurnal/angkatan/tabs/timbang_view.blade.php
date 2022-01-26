@@ -1,7 +1,28 @@
 <div class="border-top border-bottom py-2 mb-3">
-    Hari Ke : {{ $hari }}<br>
-    Tanggal : {{ Tanggal::date(Carbon\Carbon::parse($data->tanggal)->addDays(($hari - 1))) }}
+    <div class="row">
+        <div class="col-md-6">
+            Hari Ke : {{ $hari }}<br>
+            Tanggal : {{ Tanggal::date(Carbon\Carbon::parse($data->tanggal)->addDays(($hari - 1))) }}
+        </div>
+        <div class="col-md-6">
+            <form action="{{ route('import.timbang') }}" method="post" enctype="multipart/form-data">
+                @csrf
+                <div class="row">
+                    <input type="file" name="file" id="" class="form-control col-md-5 py-1 mr-2">
+                    <input type="hidden" name="kandang" id="" class="form-control col-md-5 py-1 mr-2"
+                        value="{{ $data->kandang }}">
+                    <input type="hidden" name="angkatan" id="" class="form-control col-md-5 py-1 mr-2"
+                        value="{{ $data->angkatan }}">
+                    <input type="hidden" name="angkatan" id="" class="form-control col-md-5 py-1 mr-2"
+                        value="{{ $data->tanggal }}">
+                    <input type="hidden" name="hari" value="{{ $hari }}">
+                    <button type="submit" class="btn btn-success btn-sm col-md-2">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
 
 <div class="table-responsive" style="height: 600px; overflow: auto;">
     <div class="wrapper">
@@ -26,24 +47,25 @@
             <tbody>
                 @php
                 if ($timbang) {
-                    $row    =   json_decode($timbang->data_timbang);
-                    $count  =   count($row);
+                $row = json_decode($timbang->data_timbang);
+                $count = count($row);
                 } else {
-                    $count  =   600 ;
+                $count = 600 ;
                 }
                 @endphp
-                @for ($i = 0; $i < 50; $i++)
-                    <tr>
-                        <td class="text-center sticky-col number-col">{{ $i + 1 }}</td>
-                        @for ($x = 0; $x <= $count; $x++)
-                            @if ($x >= ($i * 12) && $x < (($i + 1) * 12))
-                            <td class="text-center p-0 m-0">
-                                <input type="number" style="min-width: 50px" value="{{ $row[$x] ?? '' }}" onkeyup="hitung_berat()" class="timbang_berat m-0 p-0 form-control form-control-sm border-0 rounded-0 text-center" step="0.01">
+                @for ($i = 0; $i < 50; $i++) <tr>
+                    <td class="text-center sticky-col number-col">{{ $i + 1 }}</td>
+                    @for ($x = 0; $x <= $count; $x++) @if ($x>= ($i * 12) && $x < (($i + 1) * 12)) <td
+                            class="text-center p-0 m-0">
+                            <input type="number" style="min-width: 50px" value="{{ $row[$x] ?? '' }}"
+                                onkeyup="hitung_berat()"
+                                class="timbang_berat m-0 p-0 form-control form-control-sm border-0 rounded-0 text-center"
+                                step="0.01">
                             </td>
                             @endif
-                        @endfor
-                    </tr>
-                @endfor
+                            @endfor
+                            </tr>
+                            @endfor
             </tbody>
         </table>
     </div>
@@ -53,19 +75,22 @@
     <div class="col-md-4 col-6">
         <div class="form-group">
             <div class="small text-center bg-light p-1">Total Berat</div>
-            <input type="text" disabled id="jumlah_timbang" value="{{ $timbang->berat ?? 0 }}" class="form-control text-center rounded-0">
+            <input type="text" disabled id="jumlah_timbang" value="{{ $timbang->berat ?? 0 }}"
+                class="form-control text-center rounded-0">
         </div>
     </div>
     <div class="col-md-4 col-6">
         <div class="form-group">
             <div class="small text-center bg-light p-1">Jumlah Ekor</div>
-            <input type="text" disabled id="jumlah_ekor" value="{{ $timbang->jumlah ?? 0 }}" class="form-control text-center rounded-0">
+            <input type="text" disabled id="jumlah_ekor" value="{{ $timbang->jumlah ?? 0 }}"
+                class="form-control text-center rounded-0">
         </div>
     </div>
     <div class="col-md-4 col-12">
         <div class="form-group">
             <div class="small text-center bg-light p-1">Rata-Rata</div>
-            <input type="text" disabled id="rata_ekor" value="{{ $timbang->ratarata ?? 0 }}" class="form-control text-center rounded-0">
+            <input type="text" disabled id="rata_ekor" value="{{ $timbang->ratarata ?? 0 }}"
+                class="form-control text-center rounded-0">
         </div>
     </div>
 </div>

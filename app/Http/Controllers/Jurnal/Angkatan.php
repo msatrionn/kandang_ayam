@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Jurnal;
 
 use App\Http\Controllers\Controller;
 use App\Imports\RecordingImport;
+use App\Imports\TimbangImport;
 use Illuminate\Http\Request;
 use App\Models\Transaksi\Delivery;
 use App\Models\Master\Setup;
@@ -1361,5 +1362,59 @@ class Angkatan extends Controller
         return response()->json([
             'update' => $update
         ]);
+    }
+    public function excel_timbang(Request $request)
+    {
+        $path = $request->file('file');
+
+        try {
+            $prod_import = Excel::toArray([], $path);
+        } catch (\Throwable $th) {
+            return "Format Tidak didukung, ulangi lagi dengan format excel";
+        }
+
+        $grand_total = 0;
+        $data = [];
+        foreach ($prod_import[0] as $urut => $line) {
+            if ($urut != 0) {
+                $sub_total = 0;
+                foreach ($line as $l) {
+                    $sub_total = $sub_total + $l;
+                    if ($l > 0) {
+                        $sub_ekor[] = $l; //
+                    }
+                }
+                $grand_total = $grand_total + $sub_total;
+            }
+        }
+        $ekor = count($sub_ekor);
+        // return $ekor;
+        // return $grand_total;
+        $data                   =   RiwayatKandang::where('kandang', $request->kandang)->first();
+
+        $timbang                =   Timbang::where('riwayat_id', $data->id)
+            ->where('hari', $request->hari)
+            ->first() ?? new Timbang;
+
+        $timbang->riwayat_id    =   $data->id;
+        $timbang->hari          =   $request->hari;
+        $timbang->tanggal       =   Carbon::parse($data->tanggal)->addDays(($request->hari - 1));
+
+        $timbang->data_timbang  =   json_encode($sub_ekor);
+        $timbang->jumlah        =   $ekor ?? 0;
+        $timbang->berat         =   $grand_total ?? 0;
+        $timbang->ratarata      =   $grand_total > 0 ? round($grand_total / $ekor, 2) : NULL;
+        $timbang->save();
+
+        // return json_encode($resp);
+
+        // $import = new TimbangImport;
+        // $import->setAngkatan($request->angkatan);
+        // $import->setKandang($request->kandang);
+        // $import->setHari($request->hari);
+        // Excel::import($import, request()->file('file'));
+        // dd($import);
+
+        return redirect()->route('angkatanayam.index')->with('status', 'Berhasil import');
     }
 }
