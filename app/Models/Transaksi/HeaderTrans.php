@@ -11,7 +11,7 @@ use App\Models\Transaksi\Purchase;
 class HeaderTrans extends Model
 {
     protected $table    =   'trans_header';
-    protected $appends  =   ['nomor_transaksi', 'nominal_transaksi', 'perubahan_transaksi', 'relasi_perubahan'];
+    protected $appends  =   ['nomor_transaksi', 'nominal_transaksi', 'perubahan_transaksi', 'relasi_perubahan', 'produk'];
 
     public static function ambil_nomor($jenis)
     {
@@ -28,6 +28,10 @@ class HeaderTrans extends Model
     {
         return  ListTrans::where('header_id', $id)
             ->sum('qty');
+    }
+    public function listtrans()
+    {
+        return $this->hasMany(ListTrans::class, 'header_id', 'id');
     }
 
     public function getRelasiPerubahanAttribute()

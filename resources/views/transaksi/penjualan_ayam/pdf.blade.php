@@ -55,8 +55,8 @@
         <tbody>
             @foreach ($data->list_trans as $i => $row)
             @php
-                $exp    =   json_decode($row->riwayat->farm->json_data) ;
-                $hari   =   date_diff( date_create($data->tanggal), date_create($row->riwayat->tanggal) );
+            $exp = json_decode($row->riwayat->farm->json_data) ;
+            $hari = date_diff( date_create($data->tanggal), date_create($row->riwayat->tanggal) );
             @endphp
             <tr>
                 <td>{{ ++$i }}</td>

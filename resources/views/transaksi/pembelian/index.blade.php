@@ -16,13 +16,16 @@
 <script src="{{ asset('assets/vendor/select2/select2.js') }}"></script>
 
 <script>
-$("#form_pembelian").load("{{ route('pembelian.index', ['key' => 'input']) }}");
+    $("#form_pembelian").load("{{ route('pembelian.index', ['key' => 'input']) }}");
 $("#daftar_pembelian").load("{{ route('pembelian.index', ['key' => 'daftar']) }}");
 </script>
 
 <script>
     $(document).on('click', '#input_pembelian', function() {
+        var angkatan            =   $("[name=angkatan]").val() ;
         var kandang             =   $("#kandang").val() ;
+        console.log(angkatan);
+        console.log(kandang);
         var produk              =   $("#produk").val() ;
         var check_produk        =   $("#check_produk:checked").val() ;
         var tulis_produk        =   $("#tulis_produk").val() ;
@@ -51,6 +54,7 @@ $("#daftar_pembelian").load("{{ route('pembelian.index', ['key' => 'daftar']) }}
             method: "POST",
             data: {
                 kandang             :   kandang,
+                angkatan            :   angkatan,
                 produk              :   produk,
                 check_produk        :   check_produk,
                 tulis_produk        :   tulis_produk,
@@ -93,7 +97,7 @@ $("#daftar_pembelian").load("{{ route('pembelian.index', ['key' => 'daftar']) }}
 </script>
 
 <script>
-var url =   "{{ route('pembelian.index', ['key' => 'daftar']) }}";
+    var url =   "{{ route('pembelian.index', ['key' => 'daftar']) }}";
 $('#search').on('keyup', function(){
     $.ajax({
         url: url + "&search=" +$(this).val(),
@@ -127,7 +131,8 @@ $('#search').on('keyup', function(){
                         <div class="col-lg col-6"><input type="date" name="mulai" class="form-control"></div>
                         <div class="col-lg col-6"><input type="date" name="selesai" class="form-control"></div>
                         <div class="col-xl-auto col-12 pl-xl-1 mt-3 mt-xl-0">
-                            <button type="submit" class="btn btn-outline-success btn-block"><i class="fa fa-file-excel-o"></i> Unduh</button>
+                            <button type="submit" class="btn btn-outline-success btn-block"><i
+                                    class="fa fa-file-excel-o"></i> Unduh</button>
                         </div>
                     </div>
                 </form>
@@ -137,7 +142,8 @@ $('#search').on('keyup', function(){
             <div class="card-header">Riwayat Pembelian</div>
             <div class="card-body">
                 <div class="form-group">
-                    <input type="text" name="search" id="search" autocomplete="off" placeholder="Pencarian..." class="form-control search-data">
+                    <input type="text" name="search" id="search" autocomplete="off" placeholder="Pencarian..."
+                        class="form-control search-data">
                 </div>
 
                 <div id="daftar_pembelian"></div>

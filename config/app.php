@@ -1,5 +1,6 @@
 <?php
 
+
 return [
 
     /*
@@ -191,6 +192,7 @@ return [
 
     'aliases' => [
 
+        'Angkatan' => App\Models\Jurnal\Angkatan::class,
         'App' => Illuminate\Support\Facades\App::class,
         'Arr' => Illuminate\Support\Arr::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
@@ -208,6 +210,7 @@ return [
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'File' => Illuminate\Support\Facades\File::class,
         'Gate' => Illuminate\Support\Facades\Gate::class,
+        'Gaji' =>  App\Models\Transaksi\Gaji::class,
         'Hash' => Illuminate\Support\Facades\Hash::class,
         'Http' => Illuminate\Support\Facades\Http::class,
         'Lang' => Illuminate\Support\Facades\Lang::class,

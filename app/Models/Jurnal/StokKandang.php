@@ -26,4 +26,8 @@ class StokKandang extends Model
     {
         return $this->belongsTo(Setup::class, 'kandang_id', 'id')->withTrashed();
     }
+    public function nama_kandang()
+    {
+        return $this->belongsTo(Setup::class, 'kandang_id', 'id');
+    }
 }

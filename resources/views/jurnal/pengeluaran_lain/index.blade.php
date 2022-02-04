@@ -110,6 +110,21 @@
     })
     })
 </script>
+<script>
+    $("[name=angkatan]").on('change',function () {
+            $.ajax({
+                url:"{{ route('purchasing.index',['key'=>'kandang']) }}",
+                method:"GET",
+                data:{
+                    angkatan_id:$(this).val()
+                },
+                success:function (data) {
+                    console.log(data);
+                    $("#kandang-select").html(data)
+                }
+            })
+        })
+</script>
 @endsection
 
 @section('title', 'Pengeluaran Lain')
@@ -122,27 +137,29 @@
             <form action="{{ route('keluarlain.store') }}" method="post">
                 @csrf
                 <div class="card-body">
-                    {{-- <div class="form-group">
-                        Kandang
-                        <select name="kandang" id="kandang" class="form-control select2"
-                            data-placeholder="Pilih Kandang" data-width="100%">
-                            <option value=""></option>
-                            <option value="ALL">Tanpa Kandang</option>
-                            @foreach ($angkatan as $id => $row)
-                            <option value="{{ $row->no }}">{{ $row->no }}</option>
-                            @endforeach
-                        </select>
-                    </div> --}}
                     <div class="form-group">
                         Angkatan
-                        <select name="angkatan" id="angkatan" class="form-control select2"
-                            data-placeholder="Pilih Angkatan" data-width="100%">
+                        <select name="angkatan" id="angkatan" class="form-control select2" data-width="100%"
+                            data-placeholder="Pilih angkatan">
                             <option value=""></option>
-                            <option value="ALL">Tanpa Angkatan</option>
+                            <option value="ALL">Tanpa Angkatan </option>
                             @foreach ($angkatan as $id => $row)
-                            <option value="{{ $row->no }}">{{ $row->no }}</option>
+                            <option value="{{ $id }}">{{ $row }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div id="kandang-select">
+                        <div class="form-group">
+                            Kandang
+                            <select name="kandang" id="kandang" class="form-control select2"
+                                data-placeholder="Pilih Kandang" data-width="100%">
+                                <option value=""></option>
+                                <option value="ALL">Tanpa Kandang</option>
+                                @foreach ($kandang as $id => $row)
+                                <option value="{{ $id }}">{{ $row }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
                         Tanggal

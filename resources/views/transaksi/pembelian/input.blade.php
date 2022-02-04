@@ -1,19 +1,34 @@
 <div class="form-group">
-    Kandang
-    <select name="kandang" id="kandang" class="form-control select2" data-width="100%" data-placeholder="Pilih Kandang">
+    Angkatan
+    <select name="angkatan" id="angkatan" class="form-control select2" data-width="100%"
+        data-placeholder="Pilih angkatan">
         <option value=""></option>
-        <option value="ALL">Tanpa Kandang   </option>
-        @foreach ($kandang as $id => $row)
-        <option value="{{ $id }}">{{ $row }}</option>
+        <option value="ALL">Tanpa Angkatan </option>
+        @foreach ($angkatan as $id => $row)
+        <option value="{{ $row }}">{{ $row }}</option>
         @endforeach
     </select>
+</div>
+<div id="kandang-select">
+    <div class="form-group">
+        Kandang
+        <select name="kandang" id="kandang" class="form-control select2" data-width="100%"
+            data-placeholder="Pilih Kandang">
+            <option value=""></option>
+            <option value="ALL">Tanpa Kandang </option>
+            @foreach ($kandang as $id => $row)
+            <option value="{{ $id }}">{{ $row }}</option>
+            @endforeach
+        </select>
+    </div>
 </div>
 
 <div class="form-group">
     <a href="{{ route('pembelian.setup') }}" class="float-right">Setup Produk</a>
     Produk
     <div id="selected">
-        <select name="produk" id="produk" data-placeholder="Pilih Produk" data-width="100%" class="form-control select2">
+        <select name="produk" id="produk" data-placeholder="Pilih Produk" data-width="100%"
+            class="form-control select2">
             <option value=""></option>
             @foreach ($produk as $row)
             <option value="{{ $row->id }}">{{ $row->nama }}</option>
@@ -22,7 +37,8 @@
     </div>
     <div id="write_produk" style="display: none">
         <div class="form-group">
-            <input type="text" name="tulis_produk" id="tulis_produk" placeholder="Tulis Produk" autocomplete="off" class="form-control">
+            <input type="text" name="tulis_produk" id="tulis_produk" placeholder="Tulis Produk" autocomplete="off"
+                class="form-control">
         </div>
 
         <div class="form-group mb-0">
@@ -35,11 +51,14 @@
                     @endforeach
                 </select>
             </div>
-            <input type="text" style="display: none" name="tulis_satuan" id="tulis_satuan" placeholder="Tulis Satuan" autocomplete="off" class="form-control" autocomplete="off">
-            <label class="mt-2"><input id="check_satuan" name="check_satuan" type="checkbox"> Input satuan manual / Tidak ada di list</label>
+            <input type="text" style="display: none" name="tulis_satuan" id="tulis_satuan" placeholder="Tulis Satuan"
+                autocomplete="off" class="form-control" autocomplete="off">
+            <label class="mt-2"><input id="check_satuan" name="check_satuan" type="checkbox"> Input satuan manual /
+                Tidak ada di list</label>
         </div>
     </div>
-    <label class="mt-2"><input id="check_produk" name="check_produk" type="checkbox"> Input produk manual / Tidak ada di list</label>
+    <label class="mt-2"><input id="check_produk" name="check_produk" type="checkbox"> Input produk manual / Tidak ada di
+        list</label>
 </div>
 
 <div class="row">
@@ -52,7 +71,9 @@
     <div class="col-6 pl-1">
         <div class="form-group">
             Harga Satuan
-            <input type="number" onkeyup="hitung()" id="harga_pembelian" class="form-control" data-politespace data-politespace-grouplength="3" data-politespace-delimiter="," data-politespace-decimal-mark="." data-politespace-reverse>
+            <input type="number" onkeyup="hitung()" id="harga_pembelian" class="form-control" data-politespace
+                data-politespace-grouplength="3" data-politespace-delimiter="," data-politespace-decimal-mark="."
+                data-politespace-reverse>
         </div>
     </div>
 </div>
@@ -77,8 +98,10 @@
             @endforeach
         </select>
     </div>
-    <input type="text" style="display: none" name="tulis_pembayaran" id="tulis_pembayaran" placeholder="Tulis Pembayaran" autocomplete="off" class="form-control">
-    <label class="mt-2"><input id="check_kas" name="check_kas" type="checkbox"> Input metode pembayaran manual / Tidak ada di list</label>
+    <input type="text" style="display: none" name="tulis_pembayaran" id="tulis_pembayaran"
+        placeholder="Tulis Pembayaran" autocomplete="off" class="form-control">
+    <label class="mt-2"><input id="check_kas" name="check_kas" type="checkbox"> Input metode pembayaran manual / Tidak
+        ada di list</label>
 </div>
 
 <div class="form-group">
@@ -86,7 +109,7 @@
 </div>
 
 <script>
-function hitung() {
+    function hitung() {
     var jumlah  =   document.getElementById("jumlah_beli").value ;
     var harga   =   document.getElementById("harga_pembelian").value ;
 
@@ -95,7 +118,7 @@ function hitung() {
 </script>
 
 <script>
-$(function () {
+    $(function () {
     $('select').each(function () {
         $(this).select2({
         theme: 'bootstrap4',
@@ -131,7 +154,7 @@ jQuery( function(){
 </script>
 
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
         $(document).on('click', '#check_satuan', function() {
             var input                   =   $("#check_satuan") ;
             var satuan_select           =   document.getElementById('satuan_select');
@@ -173,4 +196,18 @@ $(document).ready(function() {
             }
         });
     });
+</script>
+<script>
+    $("[name=angkatan]").on('change',function () {
+            $.ajax({
+                url:"{{ route('purchasing.index',['key'=>'kandang']) }}",
+                method:"GET",
+                data:{
+                    angkatan_id:$(this).val()
+                },
+                success:function (data) {
+                    $("#kandang-select").html(data)
+                }
+            })
+        })
 </script>

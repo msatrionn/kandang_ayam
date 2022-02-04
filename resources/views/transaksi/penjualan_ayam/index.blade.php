@@ -21,10 +21,13 @@
 </script>
 
 <script>
-$(document).on('click', '.input_jual', function() {
+    $(document).on('click', '.input_jual', function() {
     var id          =   $(this).data('id') ;
     var jual_ayam   =   $("#jual_ayam" + id).val() ;
     var harga_ayam  =   $("#harga_ayam" + id).val() ;
+    var kandang     =   $("[name=kandang]").val() ;
+    var angkatan    =   $("[name=angkatan]").val() ;
+    var strain      =   $("[name=strain]").val() ;
 
     $.ajaxSetup({
         headers: {
@@ -39,6 +42,9 @@ $(document).on('click', '.input_jual', function() {
             id          :   id,
             jual_ayam   :   jual_ayam,
             harga_ayam  :   harga_ayam,
+            kandang     :   kandang,
+            angkatan    :   angkatan,
+            strain      :   strain,
         },
         success: function(data) {
             if (data.status == 400) {
@@ -69,7 +75,7 @@ $(document).on('click', '.input_jual', function() {
 </script>
 
 <script>
-$(document).on('click', '.hapus_list', function() {
+    $(document).on('click', '.hapus_list', function() {
     var id          =   $(this).data('id') ;
 
     $.ajaxSetup({
@@ -113,7 +119,7 @@ $(document).on('click', '.hapus_list', function() {
 </script>
 
 <script>
-$(document).on('click', '#selesaikan', function() {
+    $(document).on('click', '#selesaikan', function() {
     var konsumen            =   $("#konsumen").val() ;
     var perubahan           =   $("#perubahan").val() ;
     var tanggal             =   $("#tanggal").val() ;
@@ -171,7 +177,7 @@ $(document).on('click', '#selesaikan', function() {
 </script>
 
 <script>
-$(document).on('click', '.hapus_trans', function() {
+    $(document).on('click', '.hapus_trans', function() {
     var id  =   $(this).data('id') ;
 
     $.ajaxSetup({

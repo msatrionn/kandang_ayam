@@ -5,6 +5,7 @@
             <div class="mb-1">
                 <small>Nomor Transaksi</small><br>
                 {{ $row->nomor_transaksi }}
+
             </div>
             <div class="">
                 <small>Jumlah Ayam</small><br>
@@ -28,13 +29,13 @@
             @endif
 
             @if ($row->status == 2) |
-                @if ($row->adj)
-                <span class="text-success">
-                    Perubahan Ke Transaksi<br>{{ $row->perubahan_transaksi }}
-                </span>
-                @else
-                <span class="text-info"><b>INFO!!</b><br>Lakukan Perubahan Transaksi</span>
-                @endif
+            @if ($row->adj)
+            <span class="text-success">
+                Perubahan Ke Transaksi<br>{{ $row->perubahan_transaksi }}
+            </span>
+            @else
+            <span class="text-info"><b>INFO!!</b><br>Lakukan Perubahan Transaksi</span>
+            @endif
             @endif
         </div>
     </div>

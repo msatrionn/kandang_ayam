@@ -77,8 +77,7 @@ class PengeluaranLain extends Controller
                     ->where('status', 1)->groupBy("tanggal")
                     ->paginate(10);
 
-                $angkatan       =   Angkatan::orderBy('no', 'asc')->get();
-
+                $angkatan       =   Angkatan::orderBy('id', 'asc')->pluck('id', 'no');
                 return view('jurnal.pengeluaran_lain.index', compact('payment', 'data', 'angkatan', 'kandang'));
             }
         }
@@ -94,14 +93,8 @@ class PengeluaranLain extends Controller
                 ->orderBy('nama', 'ASC')
                 ->pluck('nama', 'id');
             $angkatan       =   Angkatan::orderBy('no', 'asc')->get();
-            $data       =   HeaderTrans::select("tanggal")->where('jenis', 'pengeluaran_lain')
-                ->orderByRaw('tanggal DESC')
-                ->where('tanggal', 'like', '%' . $request->cari . '%')
-                ->where('status', 1)->groupBy("tanggal")
-                ->paginate(10);
 
             $carian = $request->cari;
-
 
             $send = HeaderTrans::where('jenis', 'pengeluaran_lain')
                 ->orderByRaw('id DESC, tanggal DESC')
@@ -112,8 +105,19 @@ class PengeluaranLain extends Controller
                 })
                 ->where('status', 1)
                 ->get();
+            $arr = [];
+            foreach ($send as $key => $value) {
+                array_push($arr, $value->tanggal);
+            }
+            $data       =   HeaderTrans::select("tanggal")->where('jenis', 'pengeluaran_lain')
+                ->orderByRaw('tanggal DESC')
+                ->where('tanggal', 'like', '%' . $request->cari . '%')
+                ->whereIn('tanggal', $arr)
+                ->where('status', 1)->groupBy("tanggal")
+                ->paginate(10);
 
-            return view('jurnal.pengeluaran_lain.riwayat', compact('send', 'carian', 'payment', 'data', 'angkatan', 'kandang'));
+
+            return view('jurnal.pengeluaran_lain.riwayat', compact('send', 'carian', 'payment', 'data', 'angkatan', 'kandang', 'arr'));
         }
         return redirect()->route('home')->with('error', 'Anda tidak memiliki hak akses ke halaman tersebut');
     }
@@ -143,11 +147,14 @@ class PengeluaranLain extends Controller
                 return back()->withErrors($validasi)->withInput();
             }
 
+
             for ($i = 0; $i < count($request->nominal_pengeluaran); $i++) {
                 DB::beginTransaction();
 
                 $modal                  =   new HeaderTrans;
-                $modal->kandang_id      =   (!$request->angkatan) ? NULL : (($request->angkatan == 'ALL') ? NULL : $request->angkatan);
+                // $modal->kandang_id      =   (!$request->angkatan) ? NULL : (($request->angkatan == 'ALL') ? NULL : $request->angkatan);
+                $modal->kandang_id      =   $request->kandang[$i];
+                $modal->angkatan_id     =   $request->angkatan;
                 $modal->jenis           =   'pengeluaran_lain';
                 $modal->nomor           =   HeaderTrans::ambil_nomor($modal->jenis);
                 $modal->user_id         =   Auth::user()->id;

@@ -1,18 +1,20 @@
 @foreach ($data as $row)
 @php
-    $exp    =   json_decode($row->farm->json_data) ;
-    $now    =   Carbon\Carbon::now(); // Tanggal sekarang
-    $b_day  =   Carbon\Carbon::parse($row->tanggal); // Tanggal Lahir
-    $age    =   $b_day->diffInDays($now);  // Menghitung umur
-    $minggu =   $b_day->diffInWeeks($now);  // Menghitung umur
+$exp = json_decode($row->farm->json_data) ;
+$now = Carbon\Carbon::now(); // Tanggal sekarang
+$b_day = Carbon\Carbon::parse($row->tanggal); // Tanggal Lahir
+$age = $b_day->diffInDays($now); // Menghitung umur
+$minggu = $b_day->diffInWeeks($now); // Menghitung umur
 
-    $trans  =   ListTrans::where('stok_id', $row->id)
-                ->where('type', 'jual_ayam')
-                ->where('header_id', NULL)
-                ->sum('qty') ;
+$trans = ListTrans::where('stok_id', $row->id)
+->where('type', 'jual_ayam')
+->where('header_id', NULL)
+->sum('qty') ;
 @endphp
-<a class="btn btn-outline-info btn-sm btn-block mb-2 collapsed" data-toggle="collapse" href="#collapse{{ $row->id }}" role="button" aria-expanded="false" aria-controls="collapse{{ $row->id }}">
-    <b>Angkatan {{ $row->angkatan }} | {{ $row->farm->nama }}</b> | Bangunan {{ $exp->bangunan ?? '' }} | Kode {{ $exp->kode ?? '' }}
+<a class="btn btn-outline-info btn-sm btn-block mb-2 collapsed" data-toggle="collapse" href="#collapse{{ $row->id }}"
+    role="button" aria-expanded="false" aria-controls="collapse{{ $row->id }}">
+    <b>Angkatan {{ $row->angkatan }} | {{ $row->farm->nama }}</b> | Bangunan {{ $exp->bangunan ?? '' }} | Kode {{
+    $exp->kode ?? '' }}
 </a>
 <div class="collapse" id="collapse{{ $row->id }}" style="">
     <div class="p-1 mb-4">
@@ -30,12 +32,17 @@
                 <div class="form-group">
                     Jumlah Jual Ayam
                     <input type="number" id="jual_ayam{{ $row->id }}" class="form-control">
+                    <input type="hidden" name="kandang" id="" value="{{ $row->kandang }}">
+                    <input type="hidden" name="strain" id="" value="{{ $row->strain_id }}">
+                    <input type="hidden" name="angkatan" id="" value="{{ $row->angkatan }}">
                 </div>
             </div>
             <div class="col pl-1">
                 <div class="form-group">
                     Total Harga Jual
-                    <input type="number" id="harga_ayam{{ $row->id }}" class="form-control" data-politespace data-politespace-grouplength="3" data-politespace-delimiter="," data-politespace-decimal-mark="." data-politespace-reverse>
+                    <input type="number" id="harga_ayam{{ $row->id }}" class="form-control" data-politespace
+                        data-politespace-grouplength="3" data-politespace-delimiter=","
+                        data-politespace-decimal-mark="." data-politespace-reverse>
                 </div>
             </div>
         </div>
@@ -47,7 +54,7 @@
 
 
 <script>
-jQuery( function(){
+    jQuery( function(){
     jQuery( document ).trigger( "enhance" );
 });
 </script>

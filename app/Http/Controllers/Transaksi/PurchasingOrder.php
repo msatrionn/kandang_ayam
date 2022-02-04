@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Transaksi;
 
 use App\Http\Controllers\Controller;
 use App\Models\Auth\User;
+use App\Models\Jurnal\RiwayatKandang;
 use App\Models\Master\Produk;
 use App\Models\Master\Setup;
 use App\Models\Master\Supplier;
@@ -29,7 +30,7 @@ class PurchasingOrder extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         if (User::setIjin('Purchasing Order')) {
             $q      =   $request->cari ?? '';
@@ -63,31 +64,10 @@ class PurchasingOrder extends Controller
                             ->where('produk', 'LIKE', '%' . '"' . 'produk' . '"' . ':' . '"' . $word . '"' . '%')
                             ->get();
                     }
-                    // $data   =   Purchase::orderByRaw('nomor DESC, tanggal DESC')
-                    //     ->where('produk', 'LIKE', '%' . '"' . 'produk' . '"' . ':' . '"' . $produk->id . '"' . '%')
-                    //     ->orWhere('total_harga', 'LIKE', '%' .  $q  . '%')
-                    //     ->get();
                 }
-                // return $data;
             }
-            // dd($data);
-            // $data   =   Purchase::orderByRaw('nomor DESC, tanggal DESC')
-            //     ->get();
-            // $data   =   $data->filter(function ($item) use ($q) {
-            //     $res = true;
-            //     if ($q != "") {
-            //         $res =  (false !== stripos($item->total_harga, $q)) ||
-            //             (false !== stripos($item->nomor_purchasing, $q)) ||
-            //             (false !== stripos(($item->terkirim ? "Delivery " . $item->terkirim : ""), $q)) ||
-            //             (false !== stripos(($item->terkirim ? "Delivery " . number_format($item->terkirim) : ""), $q)) ||
-            //             (false !== stripos(Tanggal::date($item->tanggal), $q)) ||
-            //             (false !== stripos($item->tanggal, $q));
-            //     }
-            //     // dd($res);
-            // });
 
             $data       =   $data->paginate(15);
-
             $produk     =   Produk::orderBy('nama', 'ASC')
                 ->where('jenis', 'purchase')
                 ->get();
@@ -96,13 +76,23 @@ class PurchasingOrder extends Controller
                 ->orderBy('nama', 'ASC')
                 ->pluck('nama', 'id');
 
-            $kandang    =   Setup::where('slug', 'kandang')
-                ->orderBy('nama', 'ASC')
-                ->pluck('nama', 'id');
+            if ($request->key == 'kandang') {
+                $kandang    =   RiwayatKandang::with('farm')->where('angkatan', $request->angkatan_id)->orderBy('angkatan', 'ASC')
+                    ->get();
+                return view('transaksi.purchasing_order.input_kandang', compact('kandang'));
+            } else {
+                $angkatan    =   RiwayatKandang::distinct()->with('farm')->orderBy('angkatan', 'ASC')
+                    ->pluck('angkatan');
+                $kandang    =   RiwayatKandang::with('farm')->orderBy('angkatan', 'ASC')
+                    ->get();
+            }
 
             $supplier   =   Supplier::orderBy('nama', 'ASC')->pluck('nama', 'id');
-
-            return view('transaksi.purchasing_order.index', compact('produk', 'q', 'data', 'payment', 'supplier', 'kandang'));
+            if ($request->key == 'search') {
+                return view('transaksi.purchasing_order.show_index', compact('produk', 'q', 'data', 'payment', 'supplier', 'kandang'));
+            } else {
+                return view('transaksi.purchasing_order.index', compact('produk', 'q', 'data', 'payment', 'supplier', 'angkatan', 'kandang'));
+            }
         }
         return redirect()->route('home')->with('error', 'Anda tidak memiliki hak akses ke halaman tersebut');
     }
@@ -140,28 +130,8 @@ class PurchasingOrder extends Controller
                             ->where('produk', 'LIKE', '%' . '"' . 'produk' . '"' . ':' . '"' . $word . '"' . '%')
                             ->get();
                     }
-                    // $data   =   Purchase::orderByRaw('nomor DESC, tanggal DESC')
-                    //     ->where('produk', 'LIKE', '%' . '"' . 'produk' . '"' . ':' . '"' . $produk->id . '"' . '%')
-                    //     ->orWhere('total_harga', 'LIKE', '%' .  $q  . '%')
-                    //     ->get();
                 }
-                // return $data;
             }
-            // dd($data);
-            // $data   =   Purchase::orderByRaw('nomor DESC, tanggal DESC')
-            //     ->get();
-            // $data   =   $data->filter(function ($item) use ($q) {
-            //     $res = true;
-            //     if ($q != "") {
-            //         $res =  (false !== stripos($item->total_harga, $q)) ||
-            //             (false !== stripos($item->nomor_purchasing, $q)) ||
-            //             (false !== stripos(($item->terkirim ? "Delivery " . $item->terkirim : ""), $q)) ||
-            //             (false !== stripos(($item->terkirim ? "Delivery " . number_format($item->terkirim) : ""), $q)) ||
-            //             (false !== stripos(Tanggal::date($item->tanggal), $q)) ||
-            //             (false !== stripos($item->tanggal, $q));
-            //     }
-            //     // dd($res);
-            // });
 
             $data       =   $data->paginate(15);
 
@@ -187,146 +157,148 @@ class PurchasingOrder extends Controller
     public function store(Request $request)
     {
         if (User::setIjin('Purchasing Order')) {
-            $cek_valid  =   [
-                // "produk"            =>  ['required', Rule::exists('produk', 'id')->where('jenis', 'purchase')],
-                // "harga_satuan"      =>  'required|numeric',
-                // "jumlah_purchase"   =>  'required|numeric',
-                "tanggal_purchase"  =>  'required|date',
-                // "termin"            =>  'required|numeric',
-            ];
+            for ($i = 0; $i < count($request->angkatan); $i++) {
+                $cek_valid  =   [
+                    // "produk"            =>  ['required', Rule::exists('produk', 'id')->where('jenis', 'purchase')],
+                    // "harga_satuan"      =>  'required|numeric',
+                    // "jumlah_purchase"   =>  'required|numeric',
+                    "tanggal_purchase"  =>  'required|date',
+                    // "termin"            =>  'required|numeric',
+                ];
 
-            $down_pay   =   [];
-            if ($request->down_payment) {
-                if ($request->check_kas) {
-                    $down_pay   =   [
-                        "tulis_pembayaran"  =>  'required|string',
-                        "down_payment"      =>  'required|numeric',
+                $down_pay   =   [];
+                if ($request->down_payment[$i] ?? "") {
+                    if ($request->check_kas[$i] ?? "") {
+                        $down_pay   =   [
+                            "tulis_pembayaran"  =>  'required|string',
+                            "down_payment"      =>  'required|numeric',
+                        ];
+                    } else {
+                        $down_pay   =   [
+                            "metode_pembayaran" =>  ['required', Rule::exists('setup', 'id')->where('slug', 'payment')],
+                            "down_payment"      =>  'required|numeric',
+                        ];
+                    }
+                }
+
+                if ($request->check_supplier == 'on') {
+                    $cek_supplier =   [
+                        'nama_supplier' =>  'required|string|max:100',
+                        'nomor_telepon' =>  'required|numeric',
+                        'alamat'        =>  'required|string'
                     ];
                 } else {
-                    $down_pay   =   [
-                        "metode_pembayaran" =>  ['required', Rule::exists('setup', 'id')->where('slug', 'payment')],
-                        "down_payment"      =>  'required|numeric',
+                    $cek_supplier =   [
+                        "supplier"          =>  'required|exists:supplier,id'
                     ];
                 }
-            }
 
-            if ($request->check_supplier == 'on') {
-                $cek_supplier =   [
-                    'nama_supplier' =>  'required|string|max:100',
-                    'nomor_telepon' =>  'required|numeric',
-                    'alamat'        =>  'required|string'
-                ];
-            } else {
-                $cek_supplier =   [
-                    "supplier"          =>  'required|exists:supplier,id'
-                ];
-            }
+                $validasi   =   Validator::make($request->all(), array_merge($cek_valid, $down_pay, $cek_supplier));
+                // dd($validasi);
+                // if ($validasi->fails()) {
+                //     return back()->withErrors($validasi)->withInput();
+                // }
 
 
-            $validasi   =   Validator::make($request->all(), array_merge($cek_valid, $down_pay, $cek_supplier));
+                DB::beginTransaction();
 
-            if ($validasi->fails()) {
-                return back()->withErrors($validasi)->withInput();
-            }
+                $produk                 =   new Purchase;
+                $produk->nomor          =   Purchase::getnomor_purchase();
+
+                if ($request->check_supplier == 'on') {
+
+                    $user               =   new User;
+                    $user->name         =   $request->nama_supplier[$i];
+                    $user->type         =   'supplier';
+                    if (!$user->save()) {
+                        DB::rollBack();
+                    }
+
+                    $supplier           =   new Supplier;
+                    $supplier->id       =   $user->id[$i];
+                    $supplier->nama     =   $request->nama_supplier[$i];
+                    $supplier->alamat   =   $request->alamat[$i];
+                    $supplier->telepon  =   $request->nomor_telepon[$i];
+                    if (!$supplier->save()) {
+                        DB::rollBack();
+                    }
+
+                    $produk->supplier_id =   $user->id[$i];
+                } else {
+                    $produk->supplier_id =   $request->supplier[$i];
+                }
+
+                // $produk->tipe           =   Produk::find($request->produk)->tipe;
+                $produk->tanggal        =   $request->tanggal_purchase[$i];
+                $produk->user_id        =   Auth::user()->id;
 
 
-            DB::beginTransaction();
 
-            $produk                 =   new Purchase;
-            $produk->nomor          =   Purchase::getnomor_purchase();
+                $item   =   [];
+                $total  =   0;
+                $tt_item =   0;
+                for ($x = 0; $x < COUNT($request->produk); $x++) {
+                    if ($request->produk[$x]) {
+                        $item[]   =   [
+                            'id'        =>  rand(),
+                            'produk'    =>  $request->produk[$x],
+                            'harga'     =>  $request->harga_satuan[$x],
+                            'jumlah'    =>  $request->jumlah_purchase[$x],
+                            'terkirim'  =>  0,
+                        ];
+                        $total  +=  $request->harga_satuan[$x] * $request->jumlah_purchase[$x];
+                        $tt_item    +=  $request->jumlah_purchase[$x];
+                    }
+                }
+                $produk->qty            =   $tt_item;
+                $produk->total_harga    =   $total;
+                $produk->produk         =   json_encode($item);
 
-            if ($request->check_supplier == 'on') {
+                $produk->tax            =   $request->tax[$i] ?? null;
+                $produk->keterangan     =   $request->keterangan[$i];
+                $produk->down_payment   =   $request->down_payment[$i];
 
-                $user               =   new User;
-                $user->name         =   $request->nama_supplier;
-                $user->type         =   'supplier';
-                if (!$user->save()) {
+                if ($request->check_kas ?? "") {
+                    $payment            =   new Setup;
+                    $payment->slug      =   'payment';
+                    $payment->nama      =   $request->tulis_pembayaran[$i];
+                    $payment->status    =   2;
+                    if (!$payment->save()) {
+                        DB::rollBack();
+                    }
+
+                    $produk->kas        =   $payment->id;
+                } else {
+                    $produk->kas        =   $request->metode_pembayaran[$i];
+                }
+
+                $produk->termin         =   $request->termin[$i] ?? 1;
+                $produk->kandang_id     =   $request->kandang[$i];
+                $produk->angkatan_id       =   $request->angkatan[$i];
+                $start                  =   Carbon::parse($produk->tanggal);
+                $produk->termin_tanggal =   $start->addDays($produk->termin);
+                $produk->status         =   1;
+                if (!$produk->save()) {
                     DB::rollBack();
                 }
 
-                $supplier           =   new Supplier;
-                $supplier->id       =   $user->id;
-                $supplier->nama     =   $request->nama_supplier;
-                $supplier->alamat   =   $request->alamat;
-                $supplier->telepon  =   $request->nomor_telepon;
-                if (!$supplier->save()) {
-                    DB::rollBack();
+                if ($produk->down_payment) {
+                    $log                =   new LogTrans;
+                    $log->table         =   'purchase';
+                    $log->table_id      =   $produk->id;
+                    $log->produk_id     =   $produk->produk_id;
+                    $log->jenis         =   'dp';
+                    $log->tanggal       =   $request->tanggal_purchase[$i];
+                    $log->kas           =   $produk->kas;
+                    $log->nominal       =   $produk->down_payment;
+                    $log->status        =   1;
+                    if (!$log->save()) {
+                        DB::rollBack();
+                    }
                 }
 
-                $produk->supplier_id =   $user->id;
-            } else {
-                $produk->supplier_id =   $request->supplier;
+                DB::commit();
             }
-
-            // $produk->tipe           =   Produk::find($request->produk)->tipe;
-            $produk->tanggal        =   $request->tanggal_purchase;
-            $produk->user_id        =   Auth::user()->id;
-
-
-
-            $item   =   [];
-            $total  =   0;
-            $tt_item =   0;
-            for ($x = 0; $x < COUNT($request->produk); $x++) {
-                if ($request->produk[$x]) {
-                    $item[]   =   [
-                        'id'        =>  rand(),
-                        'produk'    =>  $request->produk[$x],
-                        'harga'     =>  $request->harga_satuan[$x],
-                        'jumlah'    =>  $request->jumlah_purchase[$x],
-                        'terkirim'  =>  0,
-                    ];
-                    $total  +=  $request->harga_satuan[$x] * $request->jumlah_purchase[$x];
-                    $tt_item    +=  $request->jumlah_purchase[$x];
-                }
-            }
-            $produk->qty            =   $tt_item;
-            $produk->total_harga    =   $total;
-            $produk->produk         =   json_encode($item);
-
-            $produk->tax            =   $request->tax;
-            $produk->keterangan     =   $request->keterangan;
-            $produk->down_payment   =   $request->down_payment;
-
-            if ($request->check_kas) {
-                $payment            =   new Setup;
-                $payment->slug      =   'payment';
-                $payment->nama      =   $request->tulis_pembayaran;
-                $payment->status    =   2;
-                if (!$payment->save()) {
-                    DB::rollBack();
-                }
-
-                $produk->kas        =   $payment->id;
-            } else {
-                $produk->kas        =   $request->metode_pembayaran;
-            }
-
-            $produk->termin         =   $request->termin ?? 1;
-            $start                  =   Carbon::parse($produk->tanggal);
-            $produk->termin_tanggal =   $start->addDays($produk->termin);;
-            $produk->status         =   1;
-            if (!$produk->save()) {
-                DB::rollBack();
-            }
-
-            if ($produk->down_payment) {
-                $log                =   new LogTrans;
-                $log->table         =   'purchase';
-                $log->table_id      =   $produk->id;
-                $log->produk_id     =   $produk->produk_id;
-                $log->jenis         =   'dp';
-                $log->tanggal       =   $request->tanggal_purchase;
-                $log->kas           =   $produk->kas;
-                $log->nominal       =   $produk->down_payment;
-                $log->status        =   1;
-                if (!$log->save()) {
-                    DB::rollBack();
-                }
-            }
-
-            DB::commit();
-
             return back()->with('status', 'Buat purchasing order berhasil');
         }
         return redirect()->route('home')->with('error', 'Anda tidak memiliki hak akses ke halaman tersebut');

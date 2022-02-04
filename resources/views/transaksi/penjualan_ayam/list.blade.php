@@ -1,6 +1,6 @@
 @php
-    $total  =   0 ;
-    $ekor   =   0 ;
+$total = 0 ;
+$ekor = 0 ;
 @endphp
 @foreach ($data as $row)
 <div class="border rounded p-2 mb-2">
@@ -8,11 +8,12 @@
         <div class="col pr-1">
             <small>Kandang</small><br>
             @php
-                $total  +=  $row->total_harga ;
-                $ekor   +=  $row->qty ;
-                $exp    =   json_decode($row->riwayat->farm->json_data);
+            $total += $row->total_harga ;
+            $ekor += $row->qty ;
+            $exp = json_decode($row->riwayat->farm->json_data);
             @endphp
-            <b class="text-info">Angkatan {{ $row->riwayat->angkatan }} | {{ $row->riwayat->farm->nama }}</b> | Bangunan {{ $exp->bangunan ?? '' }} | Kode {{ $exp->kode ?? '' }}<br>
+            <b class="text-info">Angkatan {{ $row->riwayat->angkatan }} | {{ $row->riwayat->farm->nama }}</b> | Bangunan
+            {{ $exp->bangunan ?? '' }} | Kode {{ $exp->kode ?? '' }}<br>
             {{ number_format($row->qty) }} Ekor
         </div>
         <div class="col-auto pl-1 text-right">

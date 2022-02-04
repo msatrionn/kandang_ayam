@@ -157,6 +157,10 @@ Route::post('/hak-akses', 'Master\HakAkses@store')->name('hakakses.store');
 Route::patch('/hak-akses', 'Master\HakAkses@update')->name('hakakses.update');
 Route::delete('/hak-akses', 'Master\HakAkses@destroy')->name('hakakses.destroy');
 
+Route::get('/report-pengeluaran', 'Report\ReportPengeluaran@index')->name('reportpengeluaran.index');
+Route::get('/report-penjualan', 'Report\ReportPenjualan@index')->name('reportpenjualan.index');
 Route::get('/arus-barang', 'Report\ArusBarang@index')->name('arusbarang.index');
 
 Route::get('/laba-rugi', 'Report\LabaRugi@index')->name('labarugi.index');
+Route::get('/laba-rugi-table', 'Report\LabaRugi@table')->name('labarugi.table');
+Route::get('/laba-rugi-angkatan', 'Report\LabaRugi@angkatan')->name('labarugi.angkatan');

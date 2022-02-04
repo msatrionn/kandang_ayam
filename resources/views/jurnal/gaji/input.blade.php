@@ -5,6 +5,17 @@
 
 <div id="selected">
     <div class="form-group">
+        Kandang
+        <select name="kandang" id="kandang" data-placeholder="Pilih Kandang" data-width="100%" class="form-control">
+            <option value=""></option>
+            @foreach (Option::where('slug','kandang')->get() as $row)
+            <option value="{{ $row->id }}">{{ $row->nama }}</option>
+            @endforeach
+        </select>
+    </div>
+</div>
+<div id="selected">
+    <div class="form-group">
         Nama Karyawan
         <select name="nama_karyawan" id="nama_karyawan" onchange="hitung_gaji()" data-placeholder="Pilih Nama Karyawan"
             data-width="100%" class="form-control">

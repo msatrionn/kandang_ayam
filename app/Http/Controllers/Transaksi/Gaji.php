@@ -317,6 +317,7 @@ class Gaji extends Controller
             $gaji->besar_overtime       =   $overdana ?? 0;
             $gaji->potong_gaji          =   $potong_gaji ?? 0;
             $gaji->thr                  =   $thr_gaji ?? 0;
+            $gaji->kandang_id           =   $request->kandang ?? 0;
             $gaji->bonus                =   $bonus_gaji ?? 0;
             $gaji->cashbon              =   $nominal_cashbon ?? 0;
             $gaji->keterangan           =   $request->keterangan ?? NULL;

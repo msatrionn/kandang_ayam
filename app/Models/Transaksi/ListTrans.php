@@ -31,4 +31,8 @@ class ListTrans extends Model
     {
         return $this->belongsTo(Setup::class, 'kandang_id', 'id');
     }
+    public function headtrans()
+    {
+        return $this->belongsTo(HeaderTrans::class, 'header_id', 'id');
+    }
 }

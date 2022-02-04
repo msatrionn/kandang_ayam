@@ -25,6 +25,7 @@ $("#riwayat_gaji").load("{{ route('gaji.index', ['key' => 'riwayat_gaji']) }}") 
     $(document).on('click', '#selesaikan', function() {
         var tanggal             =   $("#tanggal").val() ;
         var nama_karyawan       =   $("#nama_karyawan").val() ;
+        var kandang             =   $("#kandang").val() ;
         var check_karyawan      =   $("#check_karyawan:checked").val() ;
         var tulis_karyawan      =   $("#tulis_karyawan").val() ;
         var nomor_telepon       =   $("#nomor_telepon").val() ;
@@ -77,6 +78,7 @@ $("#riwayat_gaji").load("{{ route('gaji.index', ['key' => 'riwayat_gaji']) }}") 
                 tulis_karyawan      :   tulis_karyawan ,
                 nomor_telepon       :   nomor_telepon,
                 alamat              :   alamat,
+                kandang             :   kandang,
                 tanggal_masuk       :   tanggal_masuk,
                 gaji_per_hari       :   gaji_per_hari,
                 metode_gaji         :   metode_gaji ,
