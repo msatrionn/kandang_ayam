@@ -33,6 +33,7 @@ $("#daftar_pembelian").load("{{ route('pembelian.index', ['key' => 'daftar']) }}
         var satuan              =   $("#satuan").val() ;
         var check_satuan        =   $("#check_satuan:checked").val() ;
         var tulis_satuan        =   $("#tulis_satuan").val() ;
+        var jenis               =   $("#jenis").val() ;
 
         var jumlah_beli         =   $("#jumlah_beli").val() ;
         var harga_pembelian     =   $("#harga_pembelian").val() ;
@@ -67,6 +68,7 @@ $("#daftar_pembelian").load("{{ route('pembelian.index', ['key' => 'daftar']) }}
                 check_kas           :   check_kas,
                 tulis_pembayaran    :   tulis_pembayaran,
                 tanggal             :   tanggal,
+                jenis               :   jenis,
             },
             success: function(data) {
                 if (data.status == 400) {

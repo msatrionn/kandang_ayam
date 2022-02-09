@@ -35,6 +35,18 @@
             @endforeach
         </select>
     </div>
+
+    <div class="form-group mt-3">
+        Jenis
+        <div id="selected_jenis">
+            <select name="jenis" id="jenis" data-placeholder="Pilih Jenis" data-width="100%"
+                class="form-control select2">
+                <option value="">Pilih Jenis</option>
+                <option value="pemanas">Pemanas</option>
+            </select>
+        </div>
+    </div>
+
     <div id="write_produk" style="display: none">
         <div class="form-group">
             <input type="text" name="tulis_produk" id="tulis_produk" placeholder="Tulis Produk" autocomplete="off"

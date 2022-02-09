@@ -41,7 +41,7 @@ class PurchasingOrder extends Controller
                 $produks[] = $value->id;
             }
             // dd($produks);
-            $data = Purchase::orderByRaw('nomor DESC, tanggal DESC')
+            $data = Purchase::orderByRaw('tanggal DESC')
                 ->get();
             if ($q != "") {
                 $data   =   $data->filter(
@@ -223,13 +223,14 @@ class PurchasingOrder extends Controller
                         DB::rollBack();
                     }
 
-                    $produk->supplier_id =   $user->id[$i];
+                    // $produk->supplier_id =   $user->id;
+                    $sup_id =   $user->id[$i];
                 } else {
-                    $produk->supplier_id =   $request->supplier[$i];
+                    $sup_id =   $request->supplier[$i];
+                    // $produk->supplier_id =   $request->supplier[$i];
                 }
-
                 // $produk->tipe           =   Produk::find($request->produk)->tipe;
-                $produk->tanggal        =   $request->tanggal_purchase[$i];
+                $produk->tanggal        =   $request->tanggal_purchase;
                 $produk->user_id        =   Auth::user()->id;
 
 
@@ -242,8 +243,11 @@ class PurchasingOrder extends Controller
                         $item[]   =   [
                             'id'        =>  rand(),
                             'produk'    =>  $request->produk[$x],
+                            'angkatan'  =>  $request->angkatan[$x],
+                            'kandang'   =>  $request->kandang[$x],
                             'harga'     =>  $request->harga_satuan[$x],
                             'jumlah'    =>  $request->jumlah_purchase[$x],
+                            'supplier'  =>  $sup_id,
                             'terkirim'  =>  0,
                         ];
                         $total  +=  $request->harga_satuan[$x] * $request->jumlah_purchase[$x];
@@ -254,14 +258,14 @@ class PurchasingOrder extends Controller
                 $produk->total_harga    =   $total;
                 $produk->produk         =   json_encode($item);
 
-                $produk->tax            =   $request->tax[$i] ?? null;
-                $produk->keterangan     =   $request->keterangan[$i];
-                $produk->down_payment   =   $request->down_payment[$i];
+                $produk->tax            =   $request->tax ?? null;
+                $produk->keterangan     =   $request->keterangan;
+                $produk->down_payment   =   $request->down_payment;
 
                 if ($request->check_kas ?? "") {
                     $payment            =   new Setup;
                     $payment->slug      =   'payment';
-                    $payment->nama      =   $request->tulis_pembayaran[$i];
+                    $payment->nama      =   $request->tulis_pembayaran;
                     $payment->status    =   2;
                     if (!$payment->save()) {
                         DB::rollBack();
@@ -269,12 +273,12 @@ class PurchasingOrder extends Controller
 
                     $produk->kas        =   $payment->id;
                 } else {
-                    $produk->kas        =   $request->metode_pembayaran[$i];
+                    $produk->kas        =   $request->metode_pembayaran;
                 }
 
-                $produk->termin         =   $request->termin[$i] ?? 1;
-                $produk->kandang_id     =   $request->kandang[$i];
-                $produk->angkatan_id       =   $request->angkatan[$i];
+                $produk->termin         =   $request->termin ?? 1;
+                $produk->kandang_id     =   $request->kandang;
+                $produk->angkatan_id       =   $request->angkatan;
                 $start                  =   Carbon::parse($produk->tanggal);
                 $produk->termin_tanggal =   $start->addDays($produk->termin);
                 $produk->status         =   1;
@@ -288,7 +292,7 @@ class PurchasingOrder extends Controller
                     $log->table_id      =   $produk->id;
                     $log->produk_id     =   $produk->produk_id;
                     $log->jenis         =   'dp';
-                    $log->tanggal       =   $request->tanggal_purchase[$i];
+                    $log->tanggal       =   $request->tanggal_purchase;
                     $log->kas           =   $produk->kas;
                     $log->nominal       =   $produk->down_payment;
                     $log->status        =   1;

@@ -10,17 +10,20 @@
                 @foreach ($angkatan as $row)
                 <div class="card-header" id="heading{{ $row->no }}">
                     <p class="mb-0">
-                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{ $row->no }}" aria-expanded="true" aria-controls="collapse{{ $row->no }}">
-                        Angkatan {{ $row->no }} | {{ $row->id }}
+                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
+                            data-target="#collapse{{ $row->no }}" aria-expanded="true"
+                            aria-controls="collapse{{ $row->no }}">
+                            Angkatan {{ $row->no }} | {{ $row->id }}
                         </button>
                     </p>
                 </div>
 
-                <div id="collapse{{ $row->no }}" class="collapse show" aria-labelledby="heading{{ $row->no }}" data-parent="#accordionData">
+                <div id="collapse{{ $row->no }}" class="collapse show" aria-labelledby="heading{{ $row->no }}"
+                    data-parent="#accordionData">
                     <div class="card-body">
                         @php
-                            $total_masuk    =   0 ;
-                            $pakan          =   0 ;
+                        $total_masuk = 0 ;
+                        $pakan = 0 ;
                         @endphp
 
                         <div class="row">
@@ -38,11 +41,13 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach (Stokkandang::where('jumlah', '>', 0)->orderBy('tanggal', 'ASC')->whereIn('kandang_id', Riwayat::select('kandang')->where('angkatan', $row->id))->get() as $list)
+                                            @foreach (Stokkandang::where('jumlah', '>', 0)->orderBy('tanggal',
+                                            'ASC')->whereIn('kandang_id', Riwayat::select('kandang')->where('angkatan',
+                                            $row->id))->get() as $list)
                                             @php
-                                                if ($list->tipe == 2) {
-                                                    $pakan  +=  $list->jumlah ;
-                                                }
+                                            if ($list->tipe == 2) {
+                                            $pakan += $list->jumlah ;
+                                            }
                                             @endphp
                                             <tr>
                                                 <td>{{ date('d/m/Y', strtotime($list->tanggal)) }}</td>
@@ -52,9 +57,11 @@
                                                 <td>{{ $list->produk->tipesatuan->nama }}</td>
                                                 <td class="text-right">
                                                     @if ($list->stok->delivery)
-                                                    Rp {{ number_format(($list->stok->delivery->purchasing->total_harga / $list->stok->delivery->purchasing->terkirim) * $list->jumlah) }}
+                                                    Rp {{ number_format(($list->stok->delivery->purchasing->total_harga
+                                                    / $list->stok->delivery->purchasing->terkirim) * $list->jumlah) }}
                                                     @php
-                                                        $total_masuk    +=  ($list->stok->delivery->purchasing->total_harga / $list->stok->delivery->purchasing->terkirim) * $list->jumlah ;
+                                                    $total_masuk += ($list->stok->delivery->purchasing->total_harga /
+                                                    $list->stok->delivery->purchasing->terkirim) * $list->jumlah ;
                                                     @endphp
                                                     @else
                                                     Cut Off
@@ -66,15 +73,14 @@
                                         <tfoot>
                                             <tr>
                                                 <th colspan="3">Total</th>
-                                                <th colspan="3" class="text-right">Rp {{ number_format($total_masuk) }}</th>
+                                                <th colspan="3" class="text-right">Rp {{ number_format($total_masuk) }}
+                                                </th>
                                             </tr>
                                         </tfoot>
                                     </table>
                                 </div>
                             </div>
-
                             <div class="col-md">
-                                {{--  --}}
                             </div>
                         </div>
                     </div>

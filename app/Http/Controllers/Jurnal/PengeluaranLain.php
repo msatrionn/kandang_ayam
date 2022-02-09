@@ -152,10 +152,10 @@ class PengeluaranLain extends Controller
                 DB::beginTransaction();
 
                 $modal                  =   new HeaderTrans;
-                // $modal->kandang_id      =   (!$request->angkatan) ? NULL : (($request->angkatan == 'ALL') ? NULL : $request->angkatan);
-                $modal->kandang_id      =   $request->kandang[$i];
+                $modal->kandang_id      =   (!$request->kandang[$i]) ? NULL : (($request->kandang[$i] == 'ALL') ? NULL : $request->kandang[$i]);
+                // $modal->kandang_id      =   $request->kandang[$i];
                 $modal->angkatan_id     =   $request->angkatan;
-                $modal->jenis           =   'pengeluaran_lain';
+                $modal->jenis           =   !empty($request->jenis) ? $request->jenis[$i] : 'pengeluaran_lain';
                 $modal->nomor           =   HeaderTrans::ambil_nomor($modal->jenis);
                 $modal->user_id         =   Auth::user()->id;
                 $modal->tanggal         =   $request->tanggal;
@@ -178,10 +178,13 @@ class PengeluaranLain extends Controller
 
                 $modal->keterangan      =   $request->keterangan[$i] ?? 0;
                 $modal->status          =   1;
+                // dd($modal);
                 if (!$modal->save()) {
                     DB::rollBack();
                 }
                 $list                  =   new ListTrans;
+                $modal->kandang_id      =   (!$request->kandang[$i]) ? NULL : (($request->kandang[$i] == 'ALL') ? NULL : $request->kandang[$i]);
+                $modal->angkatan_id     =   $request->angkatan;
                 $list->header_id       =   $modal->id;
                 $list->type            =   $modal->jenis;
                 $list->harga_satuan    =   $request->nominal_pengeluaran[$i];

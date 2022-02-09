@@ -151,6 +151,7 @@ class Pembelian extends Controller
 
     public function store(Request $request)
     {
+
         if (User::setIjin('Jurnal Pembelian')) {
             if (!$request->kandang) {
                 $result['status']   =   400;
@@ -278,7 +279,7 @@ class Pembelian extends Controller
                 $log->produk_id         =   $request->produk;
             }
 
-            $log->jenis                 =   "pembelian_lain";
+            $log->jenis                 =   $request->jenis ? $request->jenis : "pembelian_lain";
             $log->angkatan_id           =   $request->angkatan ?? NULL;
             $log->kandang_id            =   $request->kandang ?? NULL;
             $log->tanggal               =   $request->tanggal;

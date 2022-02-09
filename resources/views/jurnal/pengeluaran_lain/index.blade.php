@@ -50,6 +50,16 @@
                 <i class="fa fa-trash cursor text-danger pt-2 mt-1" onClick="removeRow(${count})"></i>
             </div>
             <div class="form-group">
+                Jenis
+                <select name="jenis[]" data-placeholder="Pilih Jenis" class="form-control select2_${count}">
+                    <option value="">Pilih jenis</option>
+                    <option value="transport">Transport</option>
+                    <option value="sewa_kandang">Sewa Kandang</option>
+                    <option value="operasional">Operasional</option>
+                    <option value="humas">Humas</option>
+                </select>
+            </div>
+            <div class="form-group">
                 Nominal Pengeluaran
                 <input type="number" name="nominal_pengeluaran[]" class="form-control" value="{{ old('nominal_pengeluaran') }}"
                     id="nominal_pengeluaran" placeholder="Tuliskan Nominal Pengeluaran" autocomplete="off" data-politespace
@@ -189,6 +199,16 @@
                     </div>
                     <div class="col-auto pl-1 text-right">
                         <i class="fa fa-plus cursor text-success pt-2 mt-1 add_class"></i>
+                    </div>
+                    <div class="form-group">
+                        Jenis
+                        <select name="jenis[]" id='jenis' data-placeholder="Pilih Jenis" class="form-control">
+                            <option value="">Pilih jenis</option>
+                            <option value="transport">Transport</option>
+                            <option value="sewa_kandang">Sewa Kandang</option>
+                            <option value="operasional">Operasional</option>
+                            <option value="humas">Humas</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         Nominal Pengeluaran
